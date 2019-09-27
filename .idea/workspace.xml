@@ -2,11 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e3ff3fc1-474f-4b46-bae8-0998827d8e27" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datasets/kitti_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/datasets/kitti_dataset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datasets/mono_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/datasets/mono_dataset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/layers.py" beforeDir="false" afterPath="$PROJECT_DIR$/layers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/options.py" beforeDir="false" afterPath="$PROJECT_DIR$/options.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trainer.py" beforeDir="false" afterPath="$PROJECT_DIR$/trainer.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -41,8 +36,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/trainer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="182">
-              <caret line="616" column="46" lean-forward="true" selection-start-line="616" selection-start-column="46" selection-end-line="616" selection-end-column="46" />
+            <state relative-caret-position="227">
+              <caret line="520" column="8" selection-start-line="520" selection-start-column="8" selection-end-line="520" selection-end-column="8" />
               <folding>
                 <element signature="e#246#310#0" expanded="true" />
               </folding>
@@ -71,8 +66,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/options.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="85" column="46" selection-start-line="85" selection-start-column="36" selection-end-line="85" selection-end-column="46" />
+            <state relative-caret-position="482">
+              <caret line="162" column="57" lean-forward="true" selection-start-line="162" selection-start-column="57" selection-end-line="162" selection-end-column="57" />
             </state>
           </provider>
         </entry>
@@ -101,10 +96,12 @@
       <find>path</find>
       <find>img_ext</find>
       <find>self.img_ext</find>
-      <find>transforms</find>
-      <find>get_pred_semantics</find>
       <find>grad_proj_msak</find>
       <find>log(</find>
+      <find>save</find>
+      <find>transforms</find>
+      <find>get_pred_semantics</find>
+      <find>reprojection_loss_min</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -212,7 +209,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="55" y="-4" width="1865" height="1084" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49844238" visible="true" weight="0.26438653" />
       <window_info id="Structure" order="1" sideWeight="0.50158733" side_tool="true" weight="0.26438653" />
@@ -243,8 +239,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/options.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="85" column="46" selection-start-line="85" selection-start-column="36" selection-end-line="85" selection-end-column="46" />
+        <state relative-caret-position="482">
+          <caret line="162" column="57" lean-forward="true" selection-start-line="162" selection-start-column="57" selection-end-line="162" selection-end-column="57" />
         </state>
       </provider>
     </entry>
@@ -258,17 +254,24 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/train.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="17" selection-start-column="17" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/bnmorph/bnmorph.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
           <caret line="8" column="18" lean-forward="true" selection-start-line="8" selection-start-column="18" selection-end-line="8" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/layers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="833">
+          <caret line="285" column="40" lean-forward="true" selection-start-line="285" selection-start-column="40" selection-end-line="285" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="17" selection-start-column="17" selection-end-column="17" />
         </state>
       </provider>
     </entry>
@@ -282,17 +285,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/layers.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="833">
-          <caret line="285" column="40" lean-forward="true" selection-start-line="285" selection-start-column="40" selection-end-line="285" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/trainer.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="182">
-          <caret line="616" column="46" lean-forward="true" selection-start-line="616" selection-start-column="46" selection-end-line="616" selection-end-column="46" />
+        <state relative-caret-position="227">
+          <caret line="520" column="8" selection-start-line="520" selection-start-column="8" selection-end-line="520" selection-end-column="8" />
           <folding>
             <element signature="e#246#310#0" expanded="true" />
           </folding>

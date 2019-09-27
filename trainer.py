@@ -508,7 +508,7 @@ class Trainer:
 
         total_loss /= self.num_scales
 
-        if self.opt.isCudaMorphing:
+        if self.opt.isCudaMorphing and self.epoch > 2:
             with torch.no_grad():
                 stable_disp = outputs['disp', 0]
                 foregroundMapGt = torch.ones([self.opt.batch_size, 1, self.opt.height, self.opt.width],
@@ -543,11 +543,13 @@ class Trainer:
                     cam_points, inputs[("K", 0)], T)
                 morphed_rgb = F.grid_sample(inputs[("color", frame_id, 0)], pix_coords, padding_mode="border")
 
-                ssim_val_predict = self.compute_reprojection_loss(outputs[('color', 's', 0)], inputs[('color', 0, 0)])
                 ssim_val_morph = self.compute_reprojection_loss(morphed_rgb, inputs[('color', 0, 0)])
-                selector_mask = (ssim_val_predict - ssim_val_morph > 0).float() * outputs['grad_proj_msak']
+                reprojection_loss_min, _ = torch.min(reprojection_loss, dim=1, keepdim=True)
+                selector_mask = (reprojection_loss_min - ssim_val_morph > 0).float() * outputs['grad_proj_msak']
             losses["similarity_loss"] = torch.sum(torch.log(1 + torch.abs(dispMaps_morphed - outputs['disp', 0])) * selector_mask) / (torch.sum(selector_mask) + 1)
-        losses["loss"] = total_loss + losses["similarity_loss"] * float(self.opt.isCudaMorphing)
+            total_loss = total_loss + losses["similarity_loss"]
+
+        losses["loss"] = total_loss
         return losses
 
     def compute_depth_losses(self, inputs, outputs, losses):
