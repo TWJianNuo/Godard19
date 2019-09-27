@@ -1,16 +1,303 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="e3ff3fc1-474f-4b46-bae8-0998827d8e27" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/datasets/kitti_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/datasets/kitti_dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/datasets/mono_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/datasets/mono_dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/layers.py" beforeDir="false" afterPath="$PROJECT_DIR$/layers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/options.py" beforeDir="false" afterPath="$PROJECT_DIR$/options.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trainer.py" beforeDir="false" afterPath="$PROJECT_DIR$/trainer.py" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/train.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret column="17" selection-start-column="17" selection-end-column="17" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/datasets/kitti_dataset.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="278">
+              <caret line="93" column="33" selection-start-line="93" selection-start-column="33" selection-end-line="93" selection-end-column="33" />
+              <folding>
+                <element signature="e#246#310#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/trainer.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="182">
+              <caret line="616" column="46" lean-forward="true" selection-start-line="616" selection-start-column="46" selection-end-line="616" selection-end-column="46" />
+              <folding>
+                <element signature="e#246#310#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/layers.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="833">
+              <caret line="285" column="40" lean-forward="true" selection-start-line="285" selection-start-column="40" selection-end-line="285" selection-end-column="40" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/bnmorph/bnmorph.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="120">
+              <caret line="8" column="18" lean-forward="true" selection-start-line="8" selection-start-column="18" selection-end-line="8" selection-end-column="18" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/options.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="105">
+              <caret line="85" column="46" selection-start-line="85" selection-start-column="36" selection-end-line="85" selection-end-column="46" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/datasets/mono_dataset.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="248">
+              <caret line="200" column="34" selection-start-line="200" selection-start-column="34" selection-end-line="200" selection-end-column="34" />
+              <folding>
+                <element signature="e#246#310#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>split</find>
+      <find>eigen_full</find>
+      <find>jpg</find>
+      <find>frame_index</find>
+      <find>get_image_path</find>
+      <find>path</find>
+      <find>img_ext</find>
+      <find>self.img_ext</find>
+      <find>transforms</find>
+      <find>get_pred_semantics</find>
+      <find>grad_proj_msak</find>
+      <find>log(</find>
+    </findStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/options.py" />
+        <option value="$PROJECT_DIR$/bnmorph/bnmorph.py" />
+        <option value="$PROJECT_DIR$/datasets/kitti_dataset.py" />
+        <option value="$PROJECT_DIR$/datasets/mono_dataset.py" />
+        <option value="$PROJECT_DIR$/layers.py" />
+        <option value="$PROJECT_DIR$/trainer.py" />
+      </list>
+    </option>
+  </component>
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="57" />
     <option name="y" value="32" />
     <option name="width" value="1863" />
     <option name="height" value="1048" />
   </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="Godard19" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Godard19" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Godard19" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Godard19" type="462c0819:PsiDirectoryNode" />
+              <item name="datasets" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration name="train" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Godard19" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/train.py" />
+      <option name="PARAMETERS" value="--model_name mono+stereo_model --frame_ids 0 -1 1 --use_stereo --dataset kitti --data_path $PROJECT_DIR$/../monodepth2/kitti_data/kitti_raw --png --split kitti_seman_mapped2depth --isCudaMorphing --height 288 --width 960 --batch_size 2" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.train" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SvnConfiguration">
     <configuration>$USER_HOME$/.subversion</configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e3ff3fc1-474f-4b46-bae8-0998827d8e27" name="Default Changelist" comment="" />
+      <created>1569528943365</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1569528943365</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="55" y="-4" width="1865" height="1084" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49844238" visible="true" weight="0.26438653" />
+      <window_info id="Structure" order="1" sideWeight="0.50158733" side_tool="true" weight="0.26438653" />
+      <window_info id="Favorites" order="2" sideWeight="0.50155765" side_tool="true" weight="0.26438653" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.3291536" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4989142" visible="true" weight="0.34169278" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" sideWeight="0.50108576" side_tool="true" visible="true" weight="0.34169278" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49945712" weight="0.3291536" />
+      <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49945712" weight="0.3291536" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49945712" weight="0.3291536" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" weight="0.31452456" />
+      <window_info anchor="bottom" id="Python Console" order="10" sideWeight="0.4989142" weight="0.3291536" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$USER_HOME$/anaconda3/envs/monodepth2/lib/python3.6/site-packages/torch/utils/data/dataloader.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="528">
+          <caret line="607" selection-start-line="607" selection-end-line="607" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/options.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="85" column="46" selection-start-line="85" selection-start-column="36" selection-end-line="85" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datasets/mono_dataset.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="248">
+          <caret line="200" column="34" selection-start-line="200" selection-start-column="34" selection-end-line="200" selection-end-column="34" />
+          <folding>
+            <element signature="e#246#310#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="17" selection-start-column="17" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bnmorph/bnmorph.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="8" column="18" lean-forward="true" selection-start-line="8" selection-start-column="18" selection-end-line="8" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datasets/kitti_dataset.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="278">
+          <caret line="93" column="33" selection-start-line="93" selection-start-column="33" selection-end-line="93" selection-end-column="33" />
+          <folding>
+            <element signature="e#246#310#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/layers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="833">
+          <caret line="285" column="40" lean-forward="true" selection-start-line="285" selection-start-column="40" selection-end-line="285" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trainer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="182">
+          <caret line="616" column="46" lean-forward="true" selection-start-line="616" selection-start-column="46" selection-end-line="616" selection-end-column="46" />
+          <folding>
+            <element signature="e#246#310#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
   </component>
 </project>

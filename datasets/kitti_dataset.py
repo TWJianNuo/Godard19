@@ -13,6 +13,7 @@ import PIL.Image as pil
 
 from kitti_utils import generate_depth_map
 from .mono_dataset import MonoDataset
+from cityscapesscripts.helpers.labels import labels
 
 
 class KITTIDataset(MonoDataset):
@@ -79,7 +80,18 @@ class KITTIRAWDataset(KITTIDataset):
 
         return depth_gt
 
-
+    def get_pred_semantics(self, folder, frame_index, side, do_flip):
+        f_str = "{:010d}{}".format(frame_index, self.img_ext)
+        image_path = os.path.join(
+            self.data_path, folder, "semantic_prediction/image_0{}".format(self.side_map[side]), f_str)
+        semantic_img = np.array(self.loader(image_path))
+        if do_flip:
+            semantic_img = np.fliplr(semantic_img).copy()
+        semantic_img = semantic_img[:,:,0]
+        semantic_img_label = np.zeros_like(semantic_img)
+        for k in np.unique(semantic_img):
+            semantic_img_label[semantic_img == k] = labels[k].trainId
+        return semantic_img_label
 class KITTIOdomDataset(KITTIDataset):
     """KITTI dataset for odometry training and testing
     """

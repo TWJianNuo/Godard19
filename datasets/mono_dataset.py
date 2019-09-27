@@ -11,7 +11,6 @@ import random
 import numpy as np
 import copy
 from PIL import Image  # using pillow-simd for increased speed
-
 import torch
 import torch.utils.data as data
 from torchvision import transforms
@@ -46,7 +45,7 @@ class MonoDataset(data.Dataset):
                  frame_idxs,
                  num_scales,
                  is_train=False,
-                 img_ext='.jpg'):
+                 img_ext='.png'):
         super(MonoDataset, self).__init__()
 
         self.data_path = data_path
@@ -86,6 +85,8 @@ class MonoDataset(data.Dataset):
                                                interpolation=self.interp)
 
         self.load_depth = self.check_depth()
+        self.seman_resize = transforms.Resize((self.height, self.width),
+                                               interpolation=Image.NEAREST)
 
     def preprocess(self, inputs, color_aug):
         """Resize colour images to the required scales and augment if required
@@ -197,6 +198,9 @@ class MonoDataset(data.Dataset):
 
             inputs["stereo_T"] = torch.from_numpy(stereo_T)
 
+        # Additional semantic data
+        seman_gt = self.get_pred_semantics(folder, frame_index, side, do_flip)
+        inputs['seman_gt'] = torch.from_numpy(np.expand_dims(np.array(self.seman_resize(Image.fromarray(seman_gt))), 0).astype(np.int))
         return inputs
 
     def get_color(self, folder, frame_index, side, do_flip):
@@ -206,4 +210,7 @@ class MonoDataset(data.Dataset):
         raise NotImplementedError
 
     def get_depth(self, folder, frame_index, side, do_flip):
+        raise NotImplementedError
+
+    def get_pred_semantics(self, folder, frame_index, side, do_flip):
         raise NotImplementedError

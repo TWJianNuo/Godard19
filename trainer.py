@@ -24,6 +24,7 @@ from layers import *
 import datasets
 import networks
 from IPython import embed
+from bnmorph.bnmorph import BNMorph
 
 
 class Trainer:
@@ -119,7 +120,7 @@ class Trainer:
 
         train_filenames = readlines(fpath.format("train"))
         val_filenames = readlines(fpath.format("val"))
-        img_ext = '.png' if self.opt.png else '.jpg'
+        img_ext = '.png'
 
         num_train_samples = len(train_filenames)
         self.num_total_steps = num_train_samples // self.opt.batch_size * self.opt.num_epochs
@@ -166,6 +167,14 @@ class Trainer:
             len(train_dataset), len(val_dataset)))
 
         self.save_opts()
+
+        if self.opt.isCudaMorphing:
+            self.foregroundType = [5, 6, 7, 11, 12, 13, 14, 15, 16, 17,
+                                   18]
+            self.auto_morph = BNMorph(height=self.opt.height, width=self.opt.width, senseRange=20).cuda()
+            self.tool = grad_computation_tools(batch_size=self.opt.batch_size, height=self.opt.height,
+                                               width=self.opt.width).cuda()
+
 
     def set_train(self):
         """Convert all models to training mode
@@ -381,6 +390,12 @@ class Trainer:
 
                 outputs[("sample", frame_id, scale)] = pix_coords
 
+                if scale == 0:
+                    grad_proj_msak = (pix_coords[:, :, :, 0] > -1) * (pix_coords[:, :, :, 1] > -1) * (
+                                pix_coords[:, :, :, 0] < 1) * (pix_coords[:, :, :, 1] < 1)
+                    grad_proj_msak = grad_proj_msak.unsqueeze(1).float()
+                    outputs['grad_proj_msak'] = grad_proj_msak
+
                 outputs[("color", frame_id, scale)] = F.grid_sample(
                     inputs[("color", frame_id, source_scale)],
                     outputs[("sample", frame_id, scale)],
@@ -492,7 +507,47 @@ class Trainer:
             losses["loss/{}".format(scale)] = loss
 
         total_loss /= self.num_scales
-        losses["loss"] = total_loss
+
+        if self.opt.isCudaMorphing:
+            with torch.no_grad():
+                stable_disp = outputs['disp', 0]
+                foregroundMapGt = torch.ones([self.opt.batch_size, 1, self.opt.height, self.opt.width],
+                                             dtype=torch.uint8, device=torch.device("cuda"))
+                for m in self.foregroundType:
+                    foregroundMapGt = foregroundMapGt * (inputs['seman_gt'] != m)
+                foregroundMapGt = (1 - foregroundMapGt).float()
+
+                disparity_grad = torch.abs(self.tool.convDispx(outputs['disp', 0])) + torch.abs(
+                    self.tool.convDispy(outputs['disp', 0]))
+                semantics_grad = torch.abs(self.tool.convDispx(foregroundMapGt)) + torch.abs(
+                    self.tool.convDispy(foregroundMapGt))
+                disparity_grad = disparity_grad * self.tool.zero_mask
+                semantics_grad = semantics_grad * self.tool.zero_mask
+
+                disparity_grad_bin = disparity_grad > self.tool.disparityTh
+                semantics_grad_bin = semantics_grad > self.tool.semanticsTh
+
+                morphedx, morphedy, ocoeff = self.auto_morph.find_corresponding_pts(disparity_grad_bin, semantics_grad_bin,
+                                                                                    pixel_distance_weight=20)
+
+                morphedx = (morphedx / (self.opt.width - 1) - 0.5) * 2
+                morphedy = (morphedy / (self.opt.height - 1) - 0.5) * 2
+                grid = torch.cat([morphedx, morphedy], dim=1).permute(0, 2, 3, 1)
+                dispMaps_morphed = F.grid_sample(stable_disp.detach(), grid, padding_mode="border")
+                scaledDisp, depth = disp_to_depth(dispMaps_morphed, self.opt.min_depth, self.opt.max_depth)
+                frame_id = "s"
+                T = inputs["stereo_T"]
+                cam_points = self.backproject_depth[0](
+                    depth, inputs[("inv_K", 0)])
+                pix_coords = self.project_3d[0](
+                    cam_points, inputs[("K", 0)], T)
+                morphed_rgb = F.grid_sample(inputs[("color", frame_id, 0)], pix_coords, padding_mode="border")
+
+                ssim_val_predict = self.compute_reprojection_loss(outputs[('color', 's', 0)], inputs[('color', 0, 0)])
+                ssim_val_morph = self.compute_reprojection_loss(morphed_rgb, inputs[('color', 0, 0)])
+                selector_mask = (ssim_val_predict - ssim_val_morph > 0).float() * outputs['grad_proj_msak']
+            losses["similarity_loss"] = torch.sum(torch.log(1 + torch.abs(dispMaps_morphed - outputs['disp', 0])) * selector_mask) / (torch.sum(selector_mask) + 1)
+        losses["loss"] = total_loss + losses["similarity_loss"] * float(self.opt.isCudaMorphing)
         return losses
 
     def compute_depth_losses(self, inputs, outputs, losses):
@@ -544,32 +599,32 @@ class Trainer:
         for l, v in losses.items():
             writer.add_scalar("{}".format(l), v, self.step)
 
-        for j in range(min(4, self.opt.batch_size)):  # write a maxmimum of four images
-            for s in self.opt.scales:
-                for frame_id in self.opt.frame_ids:
-                    writer.add_image(
-                        "color_{}_{}/{}".format(frame_id, s, j),
-                        inputs[("color", frame_id, s)][j].data, self.step)
-                    if s == 0 and frame_id != 0:
-                        writer.add_image(
-                            "color_pred_{}_{}/{}".format(frame_id, s, j),
-                            outputs[("color", frame_id, s)][j].data, self.step)
-
-                writer.add_image(
-                    "disp_{}/{}".format(s, j),
-                    normalize_image(outputs[("disp", s)][j]), self.step)
-
-                if self.opt.predictive_mask:
-                    for f_idx, frame_id in enumerate(self.opt.frame_ids[1:]):
-                        writer.add_image(
-                            "predictive_mask_{}_{}/{}".format(frame_id, s, j),
-                            outputs["predictive_mask"][("disp", s)][j, f_idx][None, ...],
-                            self.step)
-
-                elif not self.opt.disable_automasking:
-                    writer.add_image(
-                        "automask_{}/{}".format(s, j),
-                        outputs["identity_selection/{}".format(s)][j][None, ...], self.step)
+        # for j in range(min(4, self.opt.batch_size)):  # write a maxmimum of four images
+        #     for s in self.opt.scales:
+        #         for frame_id in self.opt.frame_ids:
+        #             writer.add_image(
+        #                 "color_{}_{}/{}".format(frame_id, s, j),
+        #                 inputs[("color", frame_id, s)][j].data, self.step)
+        #             if s == 0 and frame_id != 0:
+        #                 writer.add_image(
+        #                     "color_pred_{}_{}/{}".format(frame_id, s, j),
+        #                     outputs[("color", frame_id, s)][j].data, self.step)
+        #
+        #         writer.add_image(
+        #             "disp_{}/{}".format(s, j),
+        #             normalize_image(outputs[("disp", s)][j]), self.step)
+        #
+        #         if self.opt.predictive_mask:
+        #             for f_idx, frame_id in enumerate(self.opt.frame_ids[1:]):
+        #                 writer.add_image(
+        #                     "predictive_mask_{}_{}/{}".format(frame_id, s, j),
+        #                     outputs["predictive_mask"][("disp", s)][j, f_idx][None, ...],
+        #                     self.step)
+        #
+        #         elif not self.opt.disable_automasking:
+        #             writer.add_image(
+        #                 "automask_{}/{}".format(s, j),
+        #                 outputs["identity_selection/{}".format(s)][j][None, ...], self.step)
 
     def save_opts(self):
         """Save options to disk so we know what we ran this experiment with

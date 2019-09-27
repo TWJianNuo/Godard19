@@ -267,3 +267,39 @@ def compute_depth_errors(gt, pred):
     sq_rel = torch.mean((gt - pred) ** 2 / gt)
 
     return abs_rel, sq_rel, rmse, rmse_log, a1, a2, a3
+
+
+class grad_computation_tools(nn.Module):
+    def __init__(self, batch_size, height, width):
+        super(grad_computation_tools, self).__init__()
+        weightsx = torch.Tensor([
+            [-1., 0., 1.],
+            [-2., 0., 2.],
+            [-1., 0., 1.]]).unsqueeze(0).unsqueeze(0)
+
+        weightsy = torch.Tensor([
+            [1., 2., 1.],
+            [0., 0., 0.],
+            [-1., -2., -1.]]).unsqueeze(0).unsqueeze(0)
+        self.convDispx = nn.Conv2d(in_channels=1, out_channels=1, kernel_size=3, padding=1, bias=False)
+        self.convDispy = nn.Conv2d(in_channels=1, out_channels=1, kernel_size=3, padding=1, bias=False)
+        self.convDispx.weight = nn.Parameter(weightsx, requires_grad=False)
+        self.convDispy.weight = nn.Parameter(weightsy, requires_grad=False)
+
+        self.disparityTh = 0.011
+        self.semanticsTh = 0.6
+
+        self.zeroRange = 2
+        self.zero_mask = torch.ones([batch_size, 1, height, width]).cuda()
+        self.zero_mask[:, :, :self.zeroRange, :] = 0
+        self.zero_mask[:, :, -self.zeroRange:, :] = 0
+        self.zero_mask[:, :, :, :self.zeroRange] = 0
+        self.zero_mask[:, :, :, -self.zeroRange:] = 0
+
+        self.mask = torch.ones([batch_size, 1, height, width], device=torch.device("cuda"))
+        self.mask[:,:,0:128,:] = 0
+    def get_dradient(self, disparityMap, foregroundMapGt):
+        disparity_grad = torch.abs(self.convDispx(disparityMap)) + torch.abs(self.convDispy(disparityMap))
+        semantics_grad = torch.abs(self.convDispx(foregroundMapGt)) + torch.abs(self.convDispy(foregroundMapGt))
+        disparity_grad = disparity_grad * self.zero_mask
+        semantics_grad = semantics_grad * self.zero_mask
