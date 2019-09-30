@@ -10,7 +10,15 @@ import hashlib
 import zipfile
 from six.moves import urllib
 
-
+from scipy.interpolate import RectBivariateSpline
+import matplotlib.pyplot as plt
+from torch.utils.data.sampler import Sampler
+from random import shuffle
+import PIL.Image as pil
+from cityscapesscripts.helpers.labels import *
+import math
+import itertools
+import numpy as np
 def readlines(filename):
     """Read all the lines in a text file and return as a list
     """
@@ -112,3 +120,40 @@ def download_model_if_doesnt_exist(model_name):
             f.extractall(model_path)
 
         print("   Model unzipped to {}".format(model_path))
+
+def visualize_semantic(img_inds):
+    # please input numpy array
+    size = [img_inds.shape[1], img_inds.shape[0]]
+    background = name2label['unlabeled'].color
+    labelImg = np.array(pil.new("RGB", size, background))
+    for id in trainId2label.keys():
+        if id >= 0:
+            label = trainId2label[id].name
+        else:
+            label = 'unlabeled'
+        color = name2label[label].color
+        mask = img_inds == id
+        labelImg[mask, :] = color
+    return pil.fromarray(labelImg)
+    # labelImg = pil.fromarray(labelImg).show()
+
+def tensor2rgb(tensor, ind):
+    slice = (tensor[ind, :, :, :].permute(1,2,0).detach().contiguous().cpu().numpy() * 255).astype(np.uint8)
+    return pil.fromarray(slice)
+
+def tensor2semantic(tensor, ind, isGt = False):
+    slice = tensor[ind, :, :, :]
+    slice = slice[0,:,:].detach().cpu().numpy()
+    # visualize_semantic(slice).show()
+    return visualize_semantic(slice)
+
+def tensor2disp(tensor, ind, vmax = None, percentile = None):
+    slice = tensor[ind, 0, :, :].detach().cpu().numpy()
+    if percentile is None:
+        percentile = 90
+    if vmax is None:
+        vmax = np.percentile(slice, percentile)
+    slice = slice / vmax
+    cm = plt.get_cmap('magma')
+    slice = (cm(slice) * 255).astype(np.uint8)
+    return pil.fromarray(slice[:,:,0:3])

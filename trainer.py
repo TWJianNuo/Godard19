@@ -58,7 +58,7 @@ class Trainer:
         self.parameters_to_train += list(self.models["encoder"].parameters())
 
         self.models["depth"] = networks.DepthDecoder(
-            self.models["encoder"].num_ch_enc, self.opt.scales)
+            self.models["encoder"].num_ch_enc, self.opt.scales, use_ordConv = self.opt.isOrdConv)
         self.models["depth"].to(self.device)
         self.parameters_to_train += list(self.models["depth"].parameters())
 
@@ -219,11 +219,7 @@ class Trainer:
 
             duration = time.time() - before_op_time
 
-            # log less frequently after the first 2000 steps to save time & disk space
-            early_phase = batch_idx % self.opt.log_frequency == 0 and self.step < 2000
-            late_phase = self.step % 2000 == 0
-
-            if early_phase or late_phase:
+            if np.mod(batch_idx, self.opt.val_frequency) == 0:
                 self.log_time(batch_idx, duration, losses["loss"].cpu().data)
 
                 if "depth_gt" in inputs:
@@ -231,8 +227,28 @@ class Trainer:
 
                 self.log("train", inputs, outputs, losses)
                 self.val()
-
+                if self.opt.writeImg:
+                    self.writeImg(outputs['disp', 0], inputs['seman_gt'], outputs['pred_morphed'])
             self.step += 1
+
+    def writeImg(self, disp, semantic_gt, disp_morphed = None):
+        viewIndex = 0
+        fig_seman = tensor2semantic(semantic_gt, ind=viewIndex, isGt=True)
+        fig_disp = tensor2disp(disp, ind=viewIndex, vmax=0.09)
+        overlay_org = pil.fromarray((np.array(fig_disp) * 0.7 + np.array(fig_seman) * 0.3).astype(np.uint8))
+
+        if disp_morphed is not None:
+            fig_disp_morphed = tensor2disp(disp_morphed, ind=viewIndex, vmax=0.09)
+            overlay_dst = pil.fromarray((np.array(fig_disp_morphed) * 0.7 + np.array(fig_seman) * 0.3).astype(np.uint8))
+
+            disp_masked = disp
+            fig_disp_masked = tensor2disp(disp_masked, vmax=0.09, ind=viewIndex)
+            fig_disp_masked_overlay = pil.fromarray((np.array(fig_disp_masked) * 0.7 + np.array(fig_seman) * 0.3).astype(np.uint8))
+
+            combined_fig = pil.fromarray(np.concatenate(
+                [np.array(overlay_org), np.array(fig_disp), np.array(overlay_dst), np.array(fig_disp_morphed), np.array(fig_disp_masked_overlay)], axis=0))
+            sv_path = os.path.join('/media/shengjie/other/sceneUnderstanding/Godard19/visualization/mono+stereo_1024x320', str(self.step) + '.png')
+            combined_fig.save(sv_path)
 
     def process_batch(self, inputs):
         """Pass a minibatch through the network and generate images and losses
@@ -508,7 +524,7 @@ class Trainer:
 
         total_loss /= self.num_scales
 
-        if self.opt.isCudaMorphing and self.epoch > 2:
+        if self.opt.isCudaMorphing and (self.epoch > 2 or self.opt.is_no_delay):
             with torch.no_grad():
                 stable_disp = outputs['disp', 0]
                 foregroundMapGt = torch.ones([self.opt.batch_size, 1, self.opt.height, self.opt.width],
@@ -546,8 +562,9 @@ class Trainer:
                 ssim_val_morph = self.compute_reprojection_loss(morphed_rgb, inputs[('color', 0, 0)])
                 reprojection_loss_min, _ = torch.min(reprojection_loss, dim=1, keepdim=True)
                 selector_mask = (reprojection_loss_min - ssim_val_morph > 0).float() * outputs['grad_proj_msak']
+                outputs['pred_morphed'] = dispMaps_morphed
             losses["similarity_loss"] = torch.sum(torch.log(1 + torch.abs(dispMaps_morphed - outputs['disp', 0])) * selector_mask) / (torch.sum(selector_mask) + 1)
-            total_loss = total_loss + losses["similarity_loss"]
+            total_loss = total_loss + losses["similarity_loss"] * self.opt.morphScale
 
         losses["loss"] = total_loss
         return losses

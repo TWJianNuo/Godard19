@@ -14,8 +14,45 @@ from collections import OrderedDict
 from layers import *
 
 
+
+class OrdConv(nn.Module):
+
+   def __init__(self, feats_in, num_outputs, kernel=1, padding=0, bins=80, lo=0, hi=2):
+       super(OrdConv, self).__init__()
+
+       self.conv = nn.Conv2d(feats_in, num_outputs * bins, kernel, padding=padding)
+       self.num_outputs = num_outputs
+       self.bins = bins
+
+       weights = np.arange(0, bins, 1) / (bins - 1)
+       weights = weights * hi + (1 - weights) * lo
+
+       self.weights = np.zeros([1, bins, 1, 1])
+       self.weights[0, :, 0, 0] = weights
+       # self.weights = torch.nn.Parameter(torch.from_numpy(self.weights).type(torch.cuda.FloatTensor))
+       self.weights = torch.from_numpy(self.weights).type(torch.cuda.FloatTensor)
+       self.softmax = nn.Softmax(dim=1)
+       self.pad = nn.ReflectionPad2d(1)
+   def forward(self, x):
+       x = self.pad(x)
+       x = self.conv(x)
+
+       batch_size = x.size(0)
+       feat_h = x.size(2)
+       feat_w = x.size(3)
+
+       # reshape for cross entropy
+       x = x.view(batch_size, self.bins, feat_h * self.num_outputs, feat_w)
+
+       # score probabilities
+       x = self.softmax(x)
+       x = torch.sum((x * self.weights), dim=1)
+       x = x.view(batch_size, self.num_outputs, feat_h, feat_w)
+       # x = x.clamp(min=0.01)
+       return x
+
 class DepthDecoder(nn.Module):
-    def __init__(self, num_ch_enc, scales=range(4), num_output_channels=1, use_skips=True):
+    def __init__(self, num_ch_enc, scales=range(4), num_output_channels=1, use_skips=True, use_ordConv = False):
         super(DepthDecoder, self).__init__()
 
         self.num_output_channels = num_output_channels
@@ -25,8 +62,9 @@ class DepthDecoder(nn.Module):
 
         self.num_ch_enc = num_ch_enc
         self.num_ch_dec = np.array([16, 32, 64, 128, 256])
-
+        self.use_ordConv = use_ordConv
         # decoder
+
         self.convs = OrderedDict()
         for i in range(4, -1, -1):
             # upconv_0
@@ -42,7 +80,10 @@ class DepthDecoder(nn.Module):
             self.convs[("upconv", i, 1)] = ConvBlock(num_ch_in, num_ch_out)
 
         for s in self.scales:
-            self.convs[("dispconv", s)] = Conv3x3(self.num_ch_dec[s], self.num_output_channels)
+            if not self.use_ordConv:
+                self.convs[("dispconv", s)] = Conv3x3(self.num_ch_dec[s], self.num_output_channels)
+            else:
+                self.convs[("dispconv", s)] = OrdConv(self.num_ch_dec[s], self.num_output_channels, kernel=3, bins=3, lo=0, hi=1)
 
         self.decoder = nn.ModuleList(list(self.convs.values()))
         self.sigmoid = nn.Sigmoid()
@@ -60,6 +101,9 @@ class DepthDecoder(nn.Module):
             x = torch.cat(x, 1)
             x = self.convs[("upconv", i, 1)](x)
             if i in self.scales:
-                self.outputs[("disp", i)] = self.sigmoid(self.convs[("dispconv", i)](x))
+                if not self.use_ordConv:
+                    self.outputs[("disp", i)] = self.sigmoid(self.convs[("dispconv", i)](x))
+                else:
+                    self.outputs[("disp", i)] = self.convs[("dispconv", i)](x)
 
         return self.outputs

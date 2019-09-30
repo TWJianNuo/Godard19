@@ -133,7 +133,21 @@ class MonodepthOptions:
                                  choices=["posecnn", "separate_resnet", "shared"])
         self.parser.add_argument("--isCudaMorphing",
                                  action="store_true")
-
+        self.parser.add_argument("--writeImg",
+                                 action="store_true")
+        self.parser.add_argument("--is_no_delay",
+                                 action="store_true")
+        self.parser.add_argument("--val_frequency",
+                                 type=int,
+                                 default=10,
+                                 help="set evaluation frequency"
+                                 )
+        self.parser.add_argument("--isOrdConv",
+                                 action="store_true"
+                                 )
+        self.parser.add_argument("--morphScale",
+                                 type=float,
+                                 default=1.0)
         # SYSTEM options
         self.parser.add_argument("--no_cuda",
                                  help="if set disables CUDA",
